@@ -15,7 +15,8 @@ module.exports = (sequelize, DataTypes) => {
       });
       Product.belongsToMany(models.Order,{
         through: models.OrderProduct
-      })
+      });
+      Product.hasMany(models.Review);
     }
   }
   Product.init({

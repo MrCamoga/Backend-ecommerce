@@ -9,7 +9,7 @@ app.use(express.json());
 
 app.get("/", (req,res) => res.send("Welcome"));
 
-const endpoints = ["products","categories","orders","auth","users"];
+const endpoints = ["products","categories","orders","auth","users","reviews"];
 
 endpoints.forEach(endpoint => app.use(`/${endpoint}`, require(`./routes/${endpoint}`)));
 
