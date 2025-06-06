@@ -1,6 +1,6 @@
 # Backend-ecommerce-api
 
-Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequelize**. Esta API gestiona productos, categorías y usuarios, permitiendo operaciones típicas de una tienda online.
+Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequelize**. Esta API gestiona productos, categorías, pedidos y usuarios, permitiendo operaciones típicas de una tienda online.
 
 ---
 
@@ -18,8 +18,8 @@ Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequ
 1. **Clona el repositorio:**
 
    ```bash
-   git clone https://github.com/iata-lab/Backend-ecommerce-api.git
-   cd Backend-ecommerce-api
+   git clone https://github.com/MrCamoga/Backend-ecommerce.git
+   cd Backend-ecommerce
    ```
 
 2. **Instala las dependencias:**
@@ -51,44 +51,64 @@ Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequ
    sequelize db:seed:all
    ```
 
+7. **Ejecuta el servidor:**
+
+   ```bash
+   npm run dev
+   ```
+
 ---
 
 ## Endpoints disponibles
 
 ### Productos
 
-- `GET /products?price=&minPrice=&maxPrice=&name=`  
+- `GET /products?price=&minPrice=&maxPrice=&name=`
   Lista todos los productos y sus categorías filtrando por precio y nombre.
 
-- `GET /products/:id`  
+- `GET /products/:id`
   Obtiene los detalles de un producto específico y sus categorías.
 
-- `POST /products`  
+- `POST /products`
   Crea un nuevo producto.
+  ```json
+  {
+    "name": "product name",		// string, required
+    "description": "description",	// string, required
+    "price": 1999,				// integer, required, price in pennies
+    "categories": [1,2,3]			// int/int[], optional
+  }
+  ```
 
-- `PUT /products/:id`  
+- `PUT /products/:id`
   Actualiza un producto existente.
 
-- `DELETE /products/:id`  
+- `DELETE /products/:id`
   Elimina un producto.
 
 ---
 
 ### Categorías
 
-- `GET /categories`  
+- `GET /categories`
   Lista todas las categorías y los productos que pertenecen a éstas.
 
-- `GET /categories/:id`  
+- `GET /categories/:id`
   Lista los detalles de una categoría.
 
-- `POST /categories`  
+- `POST /categories`
   Crea una nueva categoría.
+  ```json
+  {
+    "name": "category name",	// string, required, unique
+    "parent_category": 1		// int, optional
+  }
+  ```
 
-- `PUT /categories/:id`  
+- `PUT /categories/:id`
   Actualiza una categoría.
 
-- `DELETE /categories/:id`  
+- `DELETE /categories/:id`
   Elimina una categoría.
 
 ---
@@ -100,13 +120,27 @@ Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequ
 
 - `POST /orders`
   Crea un nuevo pedido
-
+  ```json
+  {
+    items: [		// array of tuples [productId,quantity]
+      [1,3],
+      [2,10],
+      [4,1]
+    ]
+  }
+  ```
 ---
 
 ### Login
 
 - `POST /auth/login`
   Logea a un usuario con correo y contraseña y retorna un token jwt
+  ```json
+  {
+    "email": "user@example.com",	// string, required
+    "password": "123456"			// string, required
+  }
+  ```
 
 - `DELETE /auth/logout`
   Desautoriza un token jwt
@@ -120,6 +154,15 @@ Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequ
 
 - `POST /users`
   Registra a un nuevo usuario
+  ```json
+  {
+    "first_name": "name",		// string, required, 1-50 chars
+    "last_name": "surname",		// string, required, 1-50 chars
+    "email": "user@example.com",	// string, required, must be valid email
+    "password": "123456"		// string, required, no validation in backend
+  }
+  ```
+
 
 ---
 
