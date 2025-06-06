@@ -1,6 +1,8 @@
-const { User, Sequelize: {Op}, sequelize } = require("../models/index");
+const { User, Token, Sequelize: {Op}, sequelize } = require("../models/index");
 
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const { jwt_secret } = require('../config/config.js')['development'];
 
 module.exports = {
 	login: (req,res,next) => {
@@ -10,7 +12,9 @@ module.exports = {
 
 			if(!user || !passwordsEqual) return res.status(404).send({message: 'Wrong email or password'});
 
-			res.send(user);
+			const tokenRecord = await Token.create({ UserId: user.id });
+			const token = jwt.sign({ id: user.id, token_id: tokenRecord.id }, jwt_secret);
+			res.send({message: `Welcome ${user.first_name}`, user, token});
 		}).catch(error => {
 			console.log(error)
 			res.status(500).send({message: 'Internal Server Error', error});
@@ -18,6 +22,6 @@ module.exports = {
 	},
 
 	logout: (req,res,next) => {
-
+		
 	}
 };
