@@ -14,7 +14,8 @@ module.exports = {
 	references: {
 		model: 'Users',
 		key: 'id'
-	}
+	},
+        onDelete: 'SET NULL'
       },
       total_price: {
         type: Sequelize.INTEGER
