@@ -77,8 +77,8 @@ Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequ
   ```json
   {
     "name": "product name",		// string, required
-    "description": "description",	// string, required
-    "price": 1999,				// integer, required, price in pennies
+    "description": "description",		// string, required
+    "price": 1999,			// integer, required, price in pennies
     "categories": [1,2,3]			// int/int[], optional
   }
   ```
@@ -134,7 +134,7 @@ Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequ
   Crea un nuevo pedido
   ```json
   {
-    items: [		// array of tuples [productId,quantity]
+    "items": [		// array of tuples [productId,quantity]
       [1,3],
       [2,10],
       [4,1]
@@ -151,7 +151,7 @@ Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequ
   ```json
   {
     "email": "user@example.com",	// string, required
-    "password": "123456"			// string, required
+    "password": "123456"		// string, required
   }
   ```
 
@@ -172,10 +172,10 @@ Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequ
   Registra a un nuevo usuario
   ```json
   {
-    "first_name": "name",			// string, required, 1-50 chars
-    "last_name": "surname",		// string, required, 1-50 chars
+    "first_name": "name",		// string, required, 1-50 chars
+    "last_name": "surname",	// string, required, 1-50 chars
     "email": "user@example.com",	// string, required, must be valid email
-    "password": "123456"			// string, required, no validation in backend
+    "password": "123456"		// string, required, no validation in backend
   }
   ```
 
@@ -196,9 +196,9 @@ Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequ
   Crea una nueva review.
   ```json
   {
-    "ProductId": 2,				// integer, required
+    "ProductId": 2,		// integer, required
     "textReview": "blablabla",	// string, required, 20-255 characters
-    "stars": 7,					// integer, required, 0-10
+    "stars": 7,			// integer, required, 0-10
   }
   ```
 
@@ -208,7 +208,7 @@ Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequ
   ```json
   {
     "textReview": "blabla",	// string, required, 20-255 characters
-    "stars": 8,				// integer, required, 0-10
+    "stars": 8,			// integer, required, 0-10
   }
   ```
 
