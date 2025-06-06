@@ -43,7 +43,7 @@ module.exports = {
 			console.log(total_price)
 
 			// Inserción de producto
-			const order = await Order.create({...req.body, total_price}, { transaction: t });
+			const order = await Order.create({...req.body, total_price, UserId: req.user.id}, { transaction: t });
 			const res = await OrderProduct.bulkCreate(productData.map(p => ({...p, OrderId: order.id })), { transaction: t });
 			return await Order.findByPk(order.id, {
 				attributes: { exclude: ['createdAt','updatedAt'] },
@@ -53,6 +53,7 @@ module.exports = {
 		}).then(result => {
 			res.status(201).send({message: "OK"});
 		}).catch(error => {
+			console.log(error)
 			res.status(500).send({message: "Internal Server Error",error});
 		});
 	}
