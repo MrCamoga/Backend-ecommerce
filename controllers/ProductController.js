@@ -1,6 +1,6 @@
 const { Product, Category, Sequelize: {Op}, sequelize } = require("../models/index");
 
-const ProductController = {
+module.exports = {
 	getAll: (req,res) => {
 		let {sort = 'ASC', name, price, minPrice, maxPrice} = req.query;
 		if(
@@ -113,5 +113,3 @@ const ProductController = {
 		})
 	}
 };
-
-module.exports = ProductController;
