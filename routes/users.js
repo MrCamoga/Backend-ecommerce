@@ -3,7 +3,9 @@ const router = express.Router();
 
 const { signUp, getOrders } = require("../controllers/UserController");
 
-router.get("/orders", getOrders);
+const { authentication } = require("../middleware/authentication");
+
+router.get("/orders", authentication, getOrders);
 //router.get("/:id", getById);
 router.post("/", signUp);
 
