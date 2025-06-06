@@ -23,21 +23,24 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notEmpty: true
+        notEmpty: { msg: 'Name cannot be empty' }
       }
     },
     description: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notEmpty: true
+        notEmpty: { msg: 'Description cannot be empty' }
       }
     },
     price: {
       type: DataTypes.INTEGER,
       allowNull: false,
       validate: {
-        min: 0
+        min: {
+          args: [0],
+          msg: 'Price must be positive'
+        }
       }
     },
   }, {

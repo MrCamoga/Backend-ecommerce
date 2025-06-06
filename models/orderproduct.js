@@ -31,12 +31,20 @@ module.exports = (sequelize, DataTypes) => {
       references: {
         model: "Product",
         key: "id",
+      },
+      validate: {
+        isInt: { msg: 'Product id must be an integer' }
       }
     },
     quantity: {
       type: DataTypes.INTEGER,
+      allowNull: false,
       validate: {
-        min: 0
+        min: {
+          args: [0],
+          msg: 'Product quantity must be positive'
+        },
+        isInt: { msg: 'Quantity must be an integer' }
       }
     },
     unit_price: {

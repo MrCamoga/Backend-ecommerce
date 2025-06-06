@@ -21,7 +21,8 @@ module.exports = (sequelize, DataTypes) => {
       references: {
         model: 'User',
         key: 'id'
-      }
+      },
+      onDelete: 'SET NULL'
     },
     total_price: {
       type: DataTypes.INTEGER,

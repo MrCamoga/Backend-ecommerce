@@ -24,14 +24,18 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: true,
       validate: {
-        notEmpty: true
+        notEmpty: { msg: 'Name cannot be empty' }
       }
     },
     parent_category: {
       type: DataTypes.INTEGER,
+      allowNull: true,
       references: {
         model: "Categories",
         key: "id",
+      },
+      validate: {
+        isInt: { msg: 'Parent category must be an integer' }
       }
     }
   }, {
