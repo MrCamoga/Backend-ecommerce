@@ -9,7 +9,7 @@ module.exports = {
 		try {
 			const user = await User.findOne({
 				where: { email: req.body.email },
-				attributes: {include: ['first_name','last_name','email','createdAt']}
+				attributes: {include: ['first_name','last_name','role','email','password','createdAt']}
 			});
 			// dummy password if user is not found to prevent a timing attack
 			const passwordsEqual = bcrypt.compareSync(req.body.password, user.password ?? '$2a$10$j.NJYLehXvr/ehpgoTvQ0OO2N8as45Iv0JgZbSPf6lrpUmUAbFhfS');
@@ -18,6 +18,7 @@ module.exports = {
 
 			const tokenRecord = await Token.create({ UserId: user.id });
 			const token = jwt.sign({ id: user.id, token_id: tokenRecord.id }, jwt_secret);
+			delete user.dataValues.password;
 			res.send({message: `Welcome ${user.first_name}`, user, token});
 		} catch(error) {
 			console.log(error)
