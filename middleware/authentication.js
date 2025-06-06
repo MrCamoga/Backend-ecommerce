@@ -21,7 +21,6 @@ const authentication = async (req,res,next) => {
 }
 
 const isAdmin = async (req, res, next) => {
-	throw new Error('Roles not implemented');
 	if(!req.user) return res.status(401).send({ message: 'Unauthorized'});
 	if(req.user.role != 'admin') return res.status(403).send({ message: 'Access forbidden'});
 	next();
