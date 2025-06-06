@@ -64,12 +64,15 @@ Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequ
 ### Productos
 
 - `GET /products?price=&minPrice=&maxPrice=&name=`
+
   Lista todos los productos y sus categorías filtrando por precio y nombre.
 
 - `GET /products/:id`
+
   Obtiene los detalles de un producto específico y sus categorías.
 
 - `POST /products`
+
   Crea un nuevo producto.
   ```json
   {
@@ -81,9 +84,11 @@ Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequ
   ```
 
 - `PUT /products/:id`
+
   Actualiza un producto existente.
 
 - `DELETE /products/:id`
+
   Elimina un producto.
 
 ---
@@ -91,12 +96,15 @@ Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequ
 ### Categorías
 
 - `GET /categories`
+
   Lista todas las categorías y los productos que pertenecen a éstas.
 
 - `GET /categories/:id`
+
   Lista los detalles de una categoría.
 
 - `POST /categories`
+
   Crea una nueva categoría.
   ```json
   {
@@ -106,9 +114,11 @@ Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequ
   ```
 
 - `PUT /categories/:id`
+
   Actualiza una categoría.
 
 - `DELETE /categories/:id`
+
   Elimina una categoría.
 
 ---
@@ -116,9 +126,11 @@ Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequ
 ### Pedidos
 
 - `GET /orders`
+
   Lista todos los pedidos de todos los usuarios
 
 - `POST /orders`
+
   Crea un nuevo pedido
   ```json
   {
@@ -134,6 +146,7 @@ Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequ
 ### Login
 
 - `POST /auth/login`
+
   Logea a un usuario con correo y contraseña y retorna un token jwt
   ```json
   {
@@ -143,30 +156,68 @@ Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequ
   ```
 
 - `DELETE /auth/logout`
+
   Desautoriza un token jwt
 
 ---
 
-# Users
+### Users
 
 - `GET /users/orders`
-  Obtiene todos los pedidos de un usuario logeado
+
+  Obtiene todos los pedidos de un usuario logueado
 
 - `POST /users`
+
   Registra a un nuevo usuario
   ```json
   {
-    "first_name": "name",		// string, required, 1-50 chars
+    "first_name": "name",			// string, required, 1-50 chars
     "last_name": "surname",		// string, required, 1-50 chars
     "email": "user@example.com",	// string, required, must be valid email
-    "password": "123456"		// string, required, no validation in backend
+    "password": "123456"			// string, required, no validation in backend
   }
   ```
 
+---
+
+### Reviews
+
+- `GET /reviews/:id`
+
+  Obtiene detalles de una review por id.
+
+- `GET /products/:id/reviews`
+
+  Obtiene todas las reviews de un producto.
+
+- `POST /reviews`
+
+  Crea una nueva review.
+  ```json
+  {
+    "ProductId": 2,				// integer, required
+    "textReview": "blablabla",	// string, required, 20-255 characters
+    "stars": 7,					// integer, required, 0-10
+  }
+  ```
+
+- `PUT /reviews/:id`
+
+  Actualiza una review existente
+  ```json
+  {
+    "textReview": "blabla",	// string, required, 20-255 characters
+    "stars": 8,				// integer, required, 0-10
+  }
+  ```
+
+- `DELETE /reviews/:id`
+
+  Elimina una review por id.
 
 ---
 
 ## Autores
 
-- [@ame3310](https://github.com/ame3310)
 - [@MrCamoga](https://github.com/MrCamoga)
