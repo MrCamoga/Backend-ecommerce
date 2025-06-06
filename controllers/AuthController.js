@@ -25,7 +25,15 @@ module.exports = {
 		}
 	},
 
-	logout: (req,res,next) => {
-
+	logout: async (req,res,next) => {
+		try {
+			const { token_id } = jwt.verify(req.headers.authorization, jwt_secret);
+			const result = await Token.destroy({ where: { id: token_id }});
+			if(result > 0) return res.send({ message: 'Logged out' });
+			return res.status(401).send({ message: 'Unauthorized' });
+		} catch(error) {
+			console.log(error);
+			res.status(500).send({ message: 'Error while logging out' });
+		}
 	}
 };
