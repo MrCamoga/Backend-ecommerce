@@ -9,7 +9,7 @@ Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequ
 - Node.js
 - Express
 - Sequelize
-- MySQL
+- MariaDB
 
 ---
 
