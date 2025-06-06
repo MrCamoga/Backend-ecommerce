@@ -3,9 +3,9 @@ const router = express.Router();
 
 const { createOrder, getOrders } = require("../controllers/OrderController");
 
-const { authentication } = require("../middleware/authentication");
+const { authentication, isAdmin } = require("../middleware/authentication");
 
-router.get("/", getOrders);
+router.get("/", authentication, isAdmin, getOrders);
 router.post("/", authentication, createOrder);
 
 module.exports = router;
