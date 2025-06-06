@@ -5,7 +5,7 @@ module.exports = {
 		Order.findAll({
 			attributes: { exclude: ['updatedAt'] },
 			include: [
-				{ model: Product, attributes: { exclude: ['createdAt','updatedAt']}, through: { attributes: []}}
+				{ model: Product, attributes: { exclude: ['createdAt','updatedAt']}, through: { attributes: ['quantity','unit_price']}}
 			],
 			order: [['id','ASC']]
 		}).then(orders => {
