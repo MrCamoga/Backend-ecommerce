@@ -31,7 +31,7 @@ module.exports = {
 
 			const productData = items.map(row => {
 				const product = products.find(p => p.id == row[0]);
-				if(!product) throw new Error(`Product ${name} with ID ${row.id} not found`); // 404
+				if(!product) throw new Error(`Product with ID ${row.id} not found`); // 404
 				total_price += row[1]*product.price;
 				return {
 					ProductId: row[0],
@@ -43,7 +43,7 @@ module.exports = {
 			console.log(total_price)
 
 			// Inserción de producto
-			const order = await Order.create({...req.body, total_price, UserId: req.user.id}, { transaction: t });
+			const order = await Order.create({total_price, UserId: req.user.id}, { transaction: t });
 			const res = await OrderProduct.bulkCreate(productData.map(p => ({...p, OrderId: order.id })), { transaction: t });
 			return await Order.findByPk(order.id, {
 				attributes: { exclude: ['createdAt','updatedAt'] },
@@ -54,7 +54,8 @@ module.exports = {
 			res.status(201).send({message: "OK"});
 		}).catch(error => {
 			console.log(error)
-			res.status(500).send({message: "Internal Server Error",error});
+			next(error)
+			//res.status(500).send({message: "Internal Server Error",error});
 		});
 	}
 };

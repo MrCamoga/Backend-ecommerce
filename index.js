@@ -1,9 +1,12 @@
 const express = require("express");
 const app = express();
+const { typeError } = require('./middleware/validation');
 
 const PORT = 3000;
 
 app.use(express.json());
+//app.use(typeError);
+
 app.get("/", (req,res) => res.send("Welcome"));
 
 const endpoints = ["products","categories","orders","auth","users"];
