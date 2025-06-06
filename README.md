@@ -93,6 +93,36 @@ Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequ
 
 ---
 
+### Pedidos
+
+- `GET /orders`
+  Lista todos los pedidos de todos los usuarios
+
+- `POST /orders`
+  Crea un nuevo pedido
+
+---
+
+### Login
+
+- `POST /auth/login`
+  Logea a un usuario con correo y contraseña y retorna un token jwt
+
+- `DELETE /auth/logout`
+  Desautoriza un token jwt
+
+---
+
+# Users
+
+- `GET /users/orders`
+  Obtiene todos los pedidos de un usuario logeado
+
+- `POST /users`
+  Registra a un nuevo usuario
+
+---
+
 ## Autores
 
 - [@ame3310](https://github.com/ame3310)
