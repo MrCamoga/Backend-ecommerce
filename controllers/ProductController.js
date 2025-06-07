@@ -38,10 +38,7 @@ module.exports = {
 			]
 		}).then(products => {
 			res.status(200).send({message:'OK', data: products});
-		}).catch(error => {
-			next(error);
-			//res.status(500).send({message: "Internal Server Error", error});
-		});
+		}).catch(next);
 	},
 
 	getById: (req,res,next) => {
@@ -57,17 +54,12 @@ module.exports = {
 		}).then(product => {
 			if(!product) { console.log("efwfewfew");throw new NotFoundError('Product not found');}
 			res.status(200).send({message:'OK', data: product });
-		}).catch(error => {
-			console.log(error)
-			next(error);
-	//		res.status(500).send({message: "Internal Server Error", error});
-		});
+		}).catch(next);
 	},
 
 	create: (req,res,next) => {
 		const { name, description, price, categories } = req.body;
-		//if(!name || !description || price == null || !(price >= 0))
-		//	throw new BadRequestError('Invalid')
+
 		sequelize.transaction(async (t) => {
 			const product = await Product.create(req.body, { transaction: t});
 			if(categories)
@@ -82,10 +74,7 @@ module.exports = {
 				message: "Product created successfully",
 				data: product
 			})
-		}).catch(error => {
-			next(error);
-			//res.status(500).send({message: "Internal Server Error", error});
-		});
+		}).catch(next);
 	},
 
 	updateById: (req,res,next) => {
@@ -103,10 +92,7 @@ module.exports = {
 		}).then(result => {
 			if(result[0] == 0) throw new NotFoundError('Product not found');
 			res.status(200).send({message: "OK"});
-		}).catch(error => {
-			next(error);
-//			res.status(500).send({message: "Internal Server Error", error});
-		});
+		}).catch(next);
 	},
 
 	deleteById: (req,res,next) => {
@@ -118,9 +104,6 @@ module.exports = {
 		}).then(result => {
 			if(result == 0) throw new NotFoundError('Product not found');
 			res.status(200).send({message:"OK"});
-		}).catch(error => {
-			next(error);
-//			res.status(500).send({message:"Internal Server Error", error});
-		})
+		}).catch(next)
 	}
 };
