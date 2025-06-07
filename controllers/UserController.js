@@ -2,8 +2,9 @@ const { User, Order, Token, Product, Sequelize: {Op}, sequelize } = require("../
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const sendMail = require('../config/nodemailer');
 
-const { jwt_secret } = require('../config/config.js')['development'];
+const { jwt_secret, base_url } = require('../config/config.js')['development'];
 
 module.exports = {
 	getOrders: (req,res,next) => {
@@ -32,15 +33,16 @@ module.exports = {
 			if(user.id == 1) { // First user gets admin!
 				user.update({role:'admin'});
 			}
-			const tokenRecord = await Token.create({ UserId: user.id });
-			const token = jwt.sign({ id: user.id, token_id: tokenRecord.id }, jwt_secret);
 
-			delete user.dataValues.password;
-			res.status(201).send({
-				message: "User created successfully",
-				user,
-				token
-			});
+			const confirmToken = jwt.sign({ id: user.id }, jwt_secret);
+			const confirmUrl = `${base_url}/auth/confirm/${confirmToken}`;
+
+			try {
+				sendMail(req.body.email,"Email verification",`Please click the following link to confirm your email: <br> <a href="${confirmUrl}">Confirm email</a>`);
+			} catch(error) {
+				res.status(500).send({message:"An error ocurred while sending the confirmation email"})
+			}
+			res.status(201).send({ message: "Email verification sent" });
 		} catch(error) {
 			console.log(error)
 			res.status(500).send({message: "Internal Server Error", error});

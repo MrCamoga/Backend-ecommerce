@@ -38,5 +38,20 @@ module.exports = {
 			console.log(error);
 			res.status(500).send({ message: 'Error while logging out' });
 		}
+	},
+
+	confirm: async (req,res,next) => {
+		try {
+			try {
+				var { id } = jwt.verify(req.params.token, jwt_secret);
+			} catch(error) {
+				return res.status(401).send({message: error.message});
+			}
+			const result = await User.update({verified: 1}, { where: { id }});
+			if(result[0] > 0) return res.status(200).send({message:'Email verified'});
+		} catch(error) {
+			console.log(error);
+			next(error);
+		}
 	}
 };
