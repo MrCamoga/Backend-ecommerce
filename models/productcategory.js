@@ -10,7 +10,6 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
       ProductCategory.belongsTo(models.Product, { foreignKey: 'ProductId' });
       ProductCategory.belongsTo(models.Category, { foreignKey: 'CategoryId' });
     }
@@ -19,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     ProductId: {
       type: DataTypes.INTEGER,
       onDelete: 'CASCADE',
+      primaryKey: true,
       references: {
         model: "Products",
         key: "id",
@@ -27,6 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     CategoryId: {
       type: DataTypes.INTEGER,
       onDelete: 'CASCADE',
+      primaryKey: true,
       references: {
         model: "Categories",
         key: "id",

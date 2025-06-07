@@ -10,10 +10,8 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
       Category.belongsToMany(models.Product,{
         through: models.ProductCategory,
-//	onDelete: 'CASCADE'
       });
       Category.belongsTo(Category, {
         foreignKey: 'parent_category',
@@ -26,14 +24,18 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: true,
       validate: {
-        notEmpty: true
+        notEmpty: { msg: 'Name cannot be empty' }
       }
     },
     parent_category: {
       type: DataTypes.INTEGER,
+      allowNull: true,
       references: {
         model: "Categories",
         key: "id",
+      },
+      validate: {
+        isInt: { msg: 'Parent category must be an integer' }
       }
     }
   }, {

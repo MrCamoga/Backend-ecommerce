@@ -1,7 +1,9 @@
 const { Product, Category, Sequelize: {Op} } = require("../models/index");
 
+const { BadRequestError, NotFoundError } = require('../errors/httpErrors');
+
 module.exports = {
-	getCategoriesAndProducts: (req,res) => {
+	getCategoriesAndProducts: (req,res,next) => {
 		const { name } = req.query;
 
 		const nameFilter = {
@@ -19,66 +21,56 @@ module.exports = {
 				...(name ? {name: nameFilter}:{})
 			}
 		}).then(categories => {
-			res.status(200).send(categories);
-		}).catch(error => {
-			res.status(500).send({message: "Internal Server Error", error});
-		});
+			res.status(200).send({message:'OK',data:categories});
+		}).catch(next);
 	},
 
-	getCategoryById: (req,res) => {
+	getCategoryById: (req,res,next) => {
 		let id = +req.params.id;
 		if(isNaN(id))
-			return res.status(400).send({message:"Bad Request: id must be numeric."});
+			throw new BadRequestError('id must be numeric.');
 		Category.findByPk(id, {
 			attributes: {
 				exclude: ['createdAt','updatedAt']
 			}
 		}).then(category => {
-			if(category) res.status(200).send(category);
-			else res.status(404).send({message: "Category Not Found"});
-		}).catch(error => {
-			res.status(500).send({message: "Internal Server Error", error});
-		});
+			if(!category) throw new NotFoundError('Category not found');
+			res.status(200).send({message:'OK',data:category});
+		}).catch(next);
 	},
 
-	createCategory: (req,res) => {
+	createCategory: (req,res,next) => {
 		const { name, parent_category } = req.body;
 		if(!name)
-			return res.status(400).send({message: 'Category name cannot be null'});
+			throw new BadRequestError('Category name cannot be null');
 		Category.create(req.body).then(category => {
 			res.status(201).send({
 				message: "Category created successfully",
-				category
+				data: category
 			})
-		}).catch(error => {
-			res.status(500).send({message: "Internal Server Error", error});
-		});
+		}).catch(next);
 	},
 
-	updateCategory: (req,res) => {
+	updateCategory: (req,res,next) => {
 		let id = +req.params.id;
 		if(isNaN(id))
-			return res.status(400).send({message: "Bad Request: id must be numeric."});
+			throw new BadRequestError('id must be numeric.');
 		Category.update(req.body, { where: { id }})
 		.then(result => {
-			if(result[0] > 0) res.status(200).send({message: "OK"});
-			else res.status(404).send({message: "Category Not Found"});
-		}).catch(error => {
-			res.status(500).send({message: "Internal Server Error", error});
-		});
+			if(result[0] == 0) throw new NotFoundError('Category not found');
+			res.status(200).send({message: "OK"});
+		}).catch(next);
 	},
 
-	deleteCategory: (req,res) => {
+	deleteCategory: (req,res,next) => {
 		let id = +req.params.id;
 		if(isNaN(id))
-			return res.status(400).send({message:"Bad Request: id must be numeric."});
+			throw new BadRequestError('id must be numeric.');
 		Category.destroy({
 			where: { id }
 		}).then(result => {
-			if(result > 0) res.status(200).send({message:"OK"});
-			else res.status(404).send({message:"Category Not Found"});
-		}).catch(error => {
-			res.status(500).send({message:"Internal Server Error", error});
-		})
+			if(result == 0) throw new NotFoundError('Category not found');
+			res.status(200).send({message:"OK"});
+		}).catch(next)
 	}
 };

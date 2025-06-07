@@ -10,11 +10,13 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
       Product.belongsToMany(models.Category,{
         through: models.ProductCategory,
-//	onDelete: 'CASCADE'
-      })
+      });
+      Product.belongsToMany(models.Order,{
+        through: models.OrderProduct
+      });
+      Product.hasMany(models.Review);
     }
   }
   Product.init({
@@ -22,26 +24,33 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notEmpty: true
+        notEmpty: { msg: 'Name cannot be empty' }
       }
     },
     description: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notEmpty: true
+        notEmpty: { msg: 'Description cannot be empty' }
       }
     },
     price: {
       type: DataTypes.INTEGER,
       allowNull: false,
       validate: {
-        min: 0
+	isInt: {
+	  msg: 'Price must be an integer'
+	},
+        min: {
+          args: [0],
+          msg: 'Price must be positive'
+        }
       }
     },
   }, {
     sequelize,
     modelName: 'Product',
+    paranoid: true
   });
   return Product;
 };
