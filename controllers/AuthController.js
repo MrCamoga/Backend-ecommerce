@@ -9,12 +9,13 @@ module.exports = {
 		try {
 			const user = await User.findOne({
 				where: { email: req.body.email },
-				attributes: {include: ['first_name','last_name','role','email','password','createdAt']}
+				attributes: {include: ['first_name','last_name','role','email','verified','password','createdAt']}
 			});
 			// dummy password if user is not found to prevent a timing attack
-			const passwordsEqual = bcrypt.compareSync(req.body.password, user.password ?? '$2a$10$j.NJYLehXvr/ehpgoTvQ0OO2N8as45Iv0JgZbSPf6lrpUmUAbFhfS');
+			const passwordsEqual = bcrypt.compareSync(req.body.password, user?.password ?? '$2a$10$j.NJYLehXvr/ehpgoTvQ0OO2N8as45Iv0JgZbSPf6lrpUmUAbFhfS');
 
 			if(!user || !passwordsEqual) return res.status(404).send({message: 'Wrong email or password'});
+			if(user.verified == 0) return res.status(401).send({ message: 'You must verify your email before login'});
 
 			const tokenRecord = await Token.create({ UserId: user.id });
 			const token = jwt.sign({ id: user.id, token_id: tokenRecord.id }, jwt_secret);
