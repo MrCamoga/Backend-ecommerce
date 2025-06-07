@@ -143,7 +143,11 @@ Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequ
   ```
 ---
 
-### Login
+### Auth
+
+- `GET /auth/confirm/:token`
+
+  Endpoint para verificar un correo
 
 - `POST /auth/login`
 
