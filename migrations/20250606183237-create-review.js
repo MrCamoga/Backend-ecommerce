@@ -15,7 +15,8 @@ module.exports = {
 	references: {
 		model: 'Users',
 		key: 'id'
-	}
+	},
+	onDelete: 'SET NULL'
       },
       ProductId: {
         type: Sequelize.INTEGER,
@@ -23,7 +24,8 @@ module.exports = {
 	references: {
 		model: 'Products',
 		key: 'id'
-	}
+	},
+	onDelete: 'CASCADE'
       },
       textReview: {
         type: Sequelize.STRING(255),
