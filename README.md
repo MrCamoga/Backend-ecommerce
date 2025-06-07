@@ -211,8 +211,8 @@ Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequ
   Actualiza una review existente
   ```json
   {
-    "textReview": "blabla",	// string, required, 20-255 characters
-    "stars": 8,			// integer, required, 0-10
+    "textReview": "blabla",	// string, optional, 20-255 characters
+    "stars": 8,			// integer, optional, 0-10
   }
   ```
 
