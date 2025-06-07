@@ -1,7 +1,9 @@
 const { Product, Category, Sequelize: {Op}, sequelize } = require("../models/index");
 
+const { BadRequestError, NotFoundError } = require('../errors/httpErrors');
+
 module.exports = {
-	getAll: (req,res) => {
+	getAll: (req,res,next) => {
 		let {sort = 'ASC', name, price, minPrice, maxPrice} = req.query;
 		if(
 			(sort != 'ASC' && sort != 'DESC') ||
@@ -9,11 +11,12 @@ module.exports = {
 			(minPrice !== undefined && isNaN(+minPrice)) ||
 			(maxPrice !== undefined && isNaN(+maxPrice))
 		)
-			return res.status(400).send({message:'Bad Request'});
+			throw new BadRequestError('Invalid query params');
+
 		const priceFilter = {
-			...(minPrice !== undefined && minPrice !== '' ? {[Op.gte]: +minPrice }:{}),
-			...(maxPrice !== undefined && maxPrice !== '' ? {[Op.lte]: +maxPrice }:{}),
-			...(price    !== undefined && price    !== '' ? {[Op.eq]:  +price }:{})
+			...(minPrice !== undefined && minPrice !== '' ? {[Op.gte]: minPrice }:{}),
+			...(maxPrice !== undefined && maxPrice !== '' ? {[Op.lte]: maxPrice }:{}),
+			...(price    !== undefined && price    !== '' ? {[Op.eq]:  price }:{})
 		}
 		const nameFilter = {
 			...(name ? {[Op.like]:`%${name}%`}:{})
@@ -21,7 +24,7 @@ module.exports = {
 
 		Product.findAll({
 			attributes: {
-				exclude: ['createdAt','updatedAt']
+				exclude: ['createdAt','updatedAt','deletedAt']
 			},
 			where: {
 				...(price || minPrice || maxPrice ? {price: priceFilter}:{}),
@@ -34,56 +37,62 @@ module.exports = {
 				['price',sort]
 			]
 		}).then(products => {
-			res.status(200).send(products);
+			res.status(200).send({message:'OK', data: products});
 		}).catch(error => {
-			res.status(500).send({message: "Internal Server Error", error});
+			next(error);
+			//res.status(500).send({message: "Internal Server Error", error});
 		});
 	},
-	getById: (req,res) => {
+
+	getById: (req,res,next) => {
 		let id = +req.params.id;
 		if(isNaN(id))
-			return res.status(400).send({message:"Bad Request: id must be numeric."});
+			throw new BadRequestError('Bad Request: id must be numeric.');
+
 		Product.findByPk(id, {
-			attributes: { exclude: ['createdAt','updatedAt'] },
+			attributes: { exclude: ['createdAt','updatedAt','deletedAt'] },
 			include: [
 				{ model: Category, attributes: { exclude: ['createdAt','updatedAt'] }, through: { attributes: [] }}
 			]
 		}).then(product => {
-			if(product) res.status(200).send(product);
-			else res.status(404).send({messsage: "Product Not Found"});
+			if(!product) { console.log("efwfewfew");throw new NotFoundError('Product not found');}
+			res.status(200).send({message:'OK', data: product });
 		}).catch(error => {
-			res.status(500).send({message: "Internal Server Error", error});
+			console.log(error)
+			next(error);
+	//		res.status(500).send({message: "Internal Server Error", error});
 		});
 	},
 
-	create: (req,res) => {
+	create: (req,res,next) => {
 		const { name, description, price, categories } = req.body;
-		if(!name || !description || price == null || !(price >= 0))
-			return res.status(400).send({message: 'Bad Request'});
+		//if(!name || !description || price == null || !(price >= 0))
+		//	throw new BadRequestError('Invalid')
 		sequelize.transaction(async (t) => {
 			const product = await Product.create(req.body, { transaction: t});
 			if(categories)
 				await product.addCategory(categories, { transaction: t });
 			return await Product.findByPk(product.id, {
-				attributes: { exclude: ['createdAt','updatedAt'] },
+				attributes: { exclude: ['createdAt','updatedAt','deletedAt'] },
 				include: [{model: Category, through: { attributes: [] }, attributes: { exclude: ['createdAt','updatedAt'] }}],
 				transaction: t
 			});
 		}).then(product => {
 			res.status(201).send({
 				message: "Product created successfully",
-				product
+				data: product
 			})
 		}).catch(error => {
-			res.status(500).send({message: "Internal Server Error", error});
+			next(error);
+			//res.status(500).send({message: "Internal Server Error", error});
 		});
 	},
 
-	updateById: (req,res) => {
+	updateById: (req,res,next) => {
 		let id = +req.params.id;
 		const { categories } = req.body;
 		if(isNaN(id))
-			return res.status(400).send({message: "Bad Request: id must be numeric."});
+			throw new BadRequestError('id must be numeric');
 		sequelize.transaction(async (t) => {
 			const result = await Product.update(req.body, { where: { id }, transaction: t });
 			if(categories && result[0]) {
@@ -92,24 +101,26 @@ module.exports = {
 			}
 			return result;
 		}).then(result => {
-			if(result[0] > 0) res.status(200).send({message: "OK"});
-			else res.status(404).send({message: "Product Not Found"});
+			if(result[0] == 0) throw new NotFoundError('Product not found');
+			res.status(200).send({message: "OK"});
 		}).catch(error => {
-			res.status(500).send({message: "Internal Server Error", error});
+			next(error);
+//			res.status(500).send({message: "Internal Server Error", error});
 		});
 	},
 
-	deleteById: (req,res) => {
+	deleteById: (req,res,next) => {
 		let id = +req.params.id;
 		if(isNaN(id))
-			return res.status(400).send({message:"Bad Request: id must be numeric."});
+			throw new BadRequestError('id must be numeric');
 		Product.destroy({
 			where: { id }
 		}).then(result => {
-			if(result > 0) res.status(200).send({message:"OK"});
-			else res.status(404).send({message:"Product Not Found"});
+			if(result == 0) throw new NotFoundError('Product not found');
+			res.status(200).send({message:"OK"});
 		}).catch(error => {
-			res.status(500).send({message:"Internal Server Error", error});
+			next(error);
+//			res.status(500).send({message:"Internal Server Error", error});
 		})
 	}
 };
