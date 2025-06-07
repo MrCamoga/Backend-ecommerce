@@ -1,39 +1,35 @@
 const { Product, Review, User, Sequelize: {Op}} = require("../models/index");
 
+const { BadRequestError, NotFoundError } = require("../errors/httpErrors");
+
 module.exports = {
 	getReviewById: (req,res,next) => {
 		let id = +req.params.id;
 		if(isNaN(id))
-			return res.status(400).send({message:"Bad request: id must be numeric."});
-		Product.findByPk(id, {
+			throw new BadRequestError('id must be numeric.');
+		Review.findByPk(id, {
 			attributes: { exclude: ['createdAt','updatedAt'] },
 			include: [
-				{ model: Category, attributes: { exclude: ['createdAt','updatedAt'] }, through: { attributes: [] }}
+				{ model: Product, attributes: { exclude: ['createdAt','updatedAt','deletedAt'] }}
 			]
-		}).then(product => {
-			if(product) res.status(200).send(product);
-			else res.status(404).send({message: "Review not found"});
-		}).catch(error => {
-			res.status(500).send({message: "Internal server error", error});
-		});
+		}).then(review => {
+			if(!review) throw new NotFoundError('Review not found');
+			res.status(200).send({ message:'OK', data: review });
+		}).catch(next);
 	},
 
-	getProductReviews: async (req,res,next) => {
-		try {
-			const reviews = await Review.findAll({
-				where: {
-					ProductId: +req.params.id
-				},
-				include: [
-					{ model: User, attributes: ['first_name','last_name'] }
-				],
-				order: [['id','ASC']]
-			});
-			res.status(200).send({data: reviews});
-		} catch(error) {
-			console.log(error);
-			next(error);
-		}
+	getProductReviews: (req,res,next) => {
+		const reviews = Review.findAll({
+			where: {
+				ProductId: +req.params.id
+			},
+			include: [
+				{ model: User, attributes: ['first_name','last_name'] }
+			],
+			order: [['id','ASC']]
+		}).then(reviews => {
+			res.status(200).send({ message:'OK', data: reviews });
+		}).catch(next);
 	},
 	/*
 	getUserReviews: async (req,res,next) => {
@@ -63,10 +59,12 @@ module.exports = {
 
 	createReview: async (req,res,next) => {
 		try {
+			const product = await Product.findByPk(req.body.ProductId);
+			if(!product) throw new NotFoundError('Product doesn\'t exist');
+
 			const review = await Review.create({...req.body, UserId: req.user.id });
 			res.status(201).send({message: 'Review posted successfully', data: review });
 		} catch(error) {
-			console.log(error);
 			next(error);
 		}
 	},
@@ -89,7 +87,6 @@ module.exports = {
 
 			res.status(200).send({message: 'Review updated successfully', data: review });
 		} catch(error) {
-			console.log(error);
 			next(error);
 		}
 	},
@@ -110,7 +107,6 @@ module.exports = {
 
 			res.status(200).send({message: 'Review deleted successfully' });
 		} catch(error) {
-			console.log(error);
 			next(error);
 		}
 	}

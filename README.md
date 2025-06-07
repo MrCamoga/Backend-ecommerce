@@ -173,7 +173,7 @@ Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequ
 
 - `POST /users`
 
-  Registra a un nuevo usuario
+  Registra a un nuevo usuario. El primer usuario (id = 1) se establece como admin por defecto
   ```json
   {
     "first_name": "name",		// string, required, 1-50 chars
@@ -222,6 +222,6 @@ Backend de una tienda online desarrollado con **Node.js**, **Express**, y **Sequ
 
 ---
 
-## Autores
+## Autor
 
 - [@MrCamoga](https://github.com/MrCamoga)

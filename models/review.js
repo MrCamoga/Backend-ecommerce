@@ -17,7 +17,6 @@ module.exports = (sequelize, DataTypes) => {
   Review.init({
     UserId: {
       type: DataTypes.INTEGER,
-//      primaryKey: true,
       allowNull: false,
       references: {
         model: 'User',
@@ -27,12 +26,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     ProductId: {
       type: DataTypes.INTEGER,
-      onDelete: 'CASCADE',
-//      primaryKey: true,
       references: {
         model: "Product",
         key: "id",
       },
+      onDelete: 'CASCADE',
       validate: {
         isInt: { msg: 'Product id must be an integer' }
       }

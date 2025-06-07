@@ -28,7 +28,7 @@ module.exports = {
 		try {
 			if(!req.body.password) return res.status(400).send({message:'Bad Request - Password is missing'});
 			const password = bcrypt.hashSync(req.body.password,10);
-			console.log(password)
+
 			const user = await User.create({...req.body,password,role:'user'});
 			if(user.id == 1) { // First user gets admin!
 				user.update({role:'admin'});
@@ -44,7 +44,6 @@ module.exports = {
 			}
 			res.status(201).send({ message: "Email verification sent" });
 		} catch(error) {
-			console.log(error)
 			res.status(500).send({message: "Internal Server Error", error});
 		}
 	}

@@ -52,7 +52,7 @@ module.exports = {
 				{ model: Category, attributes: { exclude: ['createdAt','updatedAt'] }, through: { attributes: [] }}
 			]
 		}).then(product => {
-			if(!product) { console.log("efwfewfew");throw new NotFoundError('Product not found');}
+			if(!product) throw new NotFoundError('Product not found');
 			res.status(200).send({message:'OK', data: product });
 		}).catch(next);
 	},
