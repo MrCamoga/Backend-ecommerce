@@ -7,14 +7,12 @@ module.exports = {
 		Order.findAll({
 			attributes: { exclude: ['updatedAt'] },
 			include: [
-				{ model: Product, attributes: { exclude: ['createdAt','updatedAt']}, through: { attributes: ['quantity','unit_price']}}
+				{ model: Product, attributes: { exclude: ['createdAt','updatedAt','deletedAt']}, through: { attributes: ['quantity','unit_price']}}
 			],
 			order: [['id','ASC']]
 		}).then(orders => {
-			res.status(200).send(orders);
-		}).catch(error => {
-			res.status(500).send({message:'Internal Server Error',error});
-		});
+			res.status(200).send({message:'OK', data: orders});
+		}).catch(next);
 	},
 
 	createOrder: (req,res,next) => {
@@ -28,37 +26,35 @@ module.exports = {
 				where: { id: items.map(item => item[0]) },
 				transaction: t
 			});
+
 			// mapear productos de la db a objetos para insertar a OrderProducts
 			let total_price = 0;
 
-
 			const productData = items.map(row => {
-				const product = products.find(p => p.id == row[0]);
-				if(!product) throw new NotFoundError(`Product with ID ${row.id} not found`);
-				total_price += row[1]*product.price;
+				let [ProductId, quantity] = row;
+				ProductId = +ProductId;
+				if(isNaN(ProductId)) throw new BadRequestError(`Product id must be numeric`)
+				const product = products.find(p => p.id == ProductId);
+				if(!product) throw new NotFoundError(`Product with ID ${ProductId} not found`);
+				total_price += quantity*product.price;
 				return {
-					ProductId: row[0],
-					quantity: row[1],
+					ProductId,
+					quantity,
 					unit_price: product.price
 				}
 			});
 
-			console.log(total_price)
-
 			// Inserción de producto
 			const order = await Order.create({total_price, UserId: req.user.id}, { transaction: t });
+			// TODO catch primary key unique violation to return bad request (repeated item in cart). or combine repeated ids in productData
 			const res = await OrderProduct.bulkCreate(productData.map(p => ({...p, OrderId: order.id })), { transaction: t, validate: true });
 			return await Order.findByPk(order.id, {
 				attributes: { exclude: ['createdAt','updatedAt'] },
-				include: [{model: Product, through: { attributes: ['quantity','unit_price'] }, attributes: { exclude: ['createdAt','updatedAt'] }}],
+				include: [{model: Product, through: { attributes: ['quantity','unit_price'] }, attributes: { exclude: ['createdAt','updatedAt','deletedAt'] }}],
 				transaction: t
 			});
 		}).then(order => {
 			res.status(201).send({message: "Order created successfully", data: order});
-		}).catch(error => {
-			console.log(error)
-			next(error)
-			//res.status(500).send({message: "Internal Server Error",error});
-		});
+		}).catch(next);
 	}
 };
