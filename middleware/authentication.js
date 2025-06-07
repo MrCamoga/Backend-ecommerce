@@ -5,7 +5,8 @@ const { jwt_secret } = require('../config/config.js')['development'];
 const authentication = async (req,res,next) => {
 	try {
 		const token = req.headers.authorization;
-		console.log(req.headers)
+		if(!token) return res.status(401).send({ message: 'Unauthorized' });
+
 		const token_payload = jwt.verify(token, jwt_secret);
 		const user = await User.findByPk(token_payload.id);
 		const tokenRecord = await Token.findByPk(token_payload.token_id);
