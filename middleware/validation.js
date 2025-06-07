@@ -13,6 +13,8 @@ module.exports = { typeError }
 
 const { HttpError } = require('../errors/httpErrors');
 
+
+// TODO detect unique constraint violation and return 409
 const handleValidationError = (err, res) => {
  let errors = err.errors.map((el) => el.message)
  if (errors.length > 1) {
